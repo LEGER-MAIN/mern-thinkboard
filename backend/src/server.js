@@ -1,17 +1,21 @@
 import express from "express";
-import notesRoutes from "./routes/notesRoutes.js"
+import notesRoutes from "./routes/notesRoutes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
+import rateLimiter from "./middleware/rateLimiter.js";
 dotenv.config();
 
 const app = express();
 
-connectDB();
+// middleware
+app.use(express.json()); // this middleware will parse JSON bodies: req.body
+// app.use(rateLimiter);
 
-app.use("/notes", notesRoutes)
+// routes
+app.use("/notes", notesRoutes);
 
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`Server started on PORT: ${PORT}`);
+connectDB().then(() => {
+  app.listen(process.env.PORT, () => {
+    console.log(`Server started on PORT: ${process.env.PORT}`);
+  });
 });
